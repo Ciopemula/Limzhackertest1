@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>LIMZHACKER</title>
+
+<style>
+
+body{
+margin:0;
+background:#000;
+color:#00ff00;
+font-family:monospace;
+overflow:hidden;
+}
+
+canvas{
+position:fixed;
+width:100%;
+height:100%;
+z-index:-5;
+opacity:.5;
+}
+
+.tv{
+position:fixed;
+inset:0;
+background:repeating-linear-gradient(
+0deg,rgba(255,255,255,.08),
+transparent 3px);
+animation:tv .15s infinite;
+z-index:5;
+}
+
+@keyframes tv{
+50%{opacity:.2}
+}
+
+.box{
+text-align:center;
+margin-top:25px;
+}
+
+#ai{
+font-size:90px;
+animation:pulse .7s infinite;
+}
+
+@keyframes pulse{
+50%{transform:scale(1.2)}
+}
+
+#warn{
+font-size:80px;
+animation:flash .4s infinite;
+}
+
+.limz{
+font-size:60px;
+letter-spacing:8px;
+text-shadow:
+0 0 25px lime,
+5px 0 red,
+-5px 0 blue;
+animation:glitch .15s infinite;
+}
+
+@keyframes glitch{
+50%{transform:translate(5px,-3px)}
+}
+
+@keyframes flash{
+50%{opacity:0}
+}
+
+.shake{
+animation:shake .1s infinite;
+}
+
+@keyframes shake{
+0%{transform:translate(4px,2px)}
+50%{transform:translate(-4px,-3px)}
+100%{transform:translate(3px,-2px)}
+}
+
+
+#clock{
+font-size:35px;
+color:red;
+text-shadow:0 0 20px red;
+}
+
+h1{
+color:red;
+animation:flash .8s infinite;
+}
+
+
+#terminal{
+
+width:85%;
+height:130px;
+
+margin:15px auto;
+
+border:1px solid lime;
+
+padding:10px;
+
+overflow:hidden;
+
+text-align:left;
+
+background:#000c;
+
+box-shadow:0 0 20px lime;
+
+}
+
+
+
+.bar{
+
+width:80%;
+
+height:15px;
+
+border:2px solid lime;
+
+margin:auto;
+
+}
+
+
+
+.load{
+
+height:100%;
+
+background:lime;
+
+animation:load 6s infinite;
+
+}
+
+
+
+@keyframes load{
+100%{width:100%}
+}
+
+
+
+#popupContainer{
+
+position:fixed;
+inset:0;
+z-index:50;
+pointer-events:none;
+
+}
+
+
+
+.errPop{
+
+position:absolute;
+
+background:#000;
+
+border:2px red solid;
+
+color:red;
+
+padding:15px;
+
+font-size:20px;
+
+box-shadow:0 0 25px red;
+
+}
+
+
+
+#count{
+
+position:fixed;
+
+top:20%;
+
+width:100%;
+
+text-align:center;
+
+font-size:90px;
+
+color:red;
+
+display:none;
+
+z-index:60;
+
+}
+
+
+
+#scare{
+
+position:fixed;
+
+top:40%;
+
+width:100%;
+
+text-align:center;
+
+font-size:45px;
+
+color:red;
+
+display:none;
+
+z-index:70;
+
+}
+
+
+
+#alarmBtn{
+
+position:fixed;
+
+bottom:25px;
+
+left:50%;
+
+transform:translateX(-50%);
+
+background:#000;
+
+color:red;
+
+border:2px solid red;
+
+padding:15px 30px;
+
+font-size:20px;
+
+font-family:monospace;
+
+box-shadow:0 0 20px red;
+
+z-index:100;
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<canvas id="matrix"></canvas>
+
+<div class="tv"></div>
+
+
+<div id="popupContainer"></div>
+
+
+<div id="count"></div>
+
+
+<div id="scare">
+⚠ SYSTEM FAILURE ⚠
+</div>
+
+
+<button id="alarmBtn" onclick="startAlarm()">
+🔊 AKTIFKAN ALARM
+</button>
+
+
+
+<div class="box">
+
+
+<div id="ai">👁</div>
+
+<div id="warn">⚠️⚠️⚠️</div>
+
+<div class="limz">
+LIMZHACKER
+</div>
+
+
+<div id="clock">
+00:00:00
+</div>
+
+
+<h1>
+⚠ SYSTEM BREACH ⚠
+</h1>
+
+
+<h2>
+Scanning...
+</h2>
+
+
+<div class="bar">
+<div class="load"></div>
+</div>
+
+
+<div id="terminal"></div>
+
+
+</div>
+
+
+
+<script>
+
+
+/* terminal */
+
+let logs=[
+"[+] Loading AI",
+"[+] Checking System",
+"[+] Signal Found",
+"[+] Error Detected",
+"[+] Warning Mode"
+];
+
+let a=0;
+
+
+setInterval(()=>{
+
+terminal.innerHTML+=
+logs[a%logs.length]+"<br>";
+
+a++;
+
+if(terminal.innerHTML.length>600)
+terminal.innerHTML="";
+
+
+},500);
+
+
+
+
+
+
+
+/* matrix */
+
+let c=document.getElementById("matrix");
+
+let ctx=c.getContext("2d");
+
+c.width=innerWidth;
+
+c.height=innerHeight;
+
+
+let chars="01ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+let size=14;
+
+let drops=[];
+
+
+for(let i=0;i<c.width/size;i++)
+drops[i]=1;
+
+
+
+function matrix(){
+
+ctx.fillStyle=
+"rgba(0,0,0,.08)";
+
+ctx.fillRect(0,0,c.width,c.height);
+
+
+ctx.fillStyle="lime";
+
+ctx.font=size+"px monospace";
+
+
+drops.forEach((y,i)=>{
+
+
+ctx.fillText(
+chars[Math.floor(Math.random()*chars.length)],
+i*size,
+y*size
+);
+
+
+drops[i]++;
+
+
+if(y*size>c.height)
+drops[i]=0;
+
+
+});
+
+
+}
+
+
+setInterval(matrix,40);
+
+
+
+
+
+
+
+/* jam */
+
+
+function jam(){
+
+let d=new Date();
+
+clock.innerHTML=
+d.getHours().toString().padStart(2,"0")+":"+
+d.getMinutes().toString().padStart(2,"0")+":"+
+d.getSeconds().toString().padStart(2,"0");
+
+}
+
+setInterval(jam,1000);
+
+jam();
+
+
+
+
+
+
+
+/* popup delay */
+
+let errors=[
+
+"⚠ UNKNOWN SIGNAL",
+"⚠ SYSTEM ERROR",
+"⚠ ACCESS DENIED",
+"⚠ DATA CORRUPTED",
+"⚠ CONNECTION LOST"
+
+];
+
+
+
+function showErrors(){
+
+
+popupContainer.innerHTML="";
+
+
+for(let i=0;i<45;i++){
+
+
+let p=document.createElement("div");
+
+p.className="errPop";
+
+p.innerHTML=
+errors[Math.floor(Math.random()*errors.length)];
+
+
+p.style.left=Math.random()*90+"%";
+
+p.style.top=Math.random()*90+"%";
+
+
+popupContainer.appendChild(p);
+
+
+}
+
+}
+
+
+
+setTimeout(()=>{
+
+showErrors();
+
+
+setInterval(()=>{
+
+
+popupContainer.innerHTML="";
+
+
+setTimeout(showErrors,2000);
+
+
+},6000);
+
+
+},2000);
+
+
+
+
+
+
+/* jumpscare */
+
+
+setInterval(()=>{
+
+document.body.classList.add("shake");
+
+scare.style.display="block";
+
+
+setTimeout(()=>{
+
+document.body.classList.remove("shake");
+
+scare.style.display="none";
+
+},800);
+
+
+},8000);
+
+
+
+
+
+
+
+/* alarm */
+
+
+let audio=
+new (window.AudioContext||
+window.webkitAudioContext)();
+
+
+
+function siren(){
+
+
+let o=audio.createOscillator();
+
+let b=audio.createOscillator();
+
+
+let g=audio.createGain();
+
+let bg=audio.createGain();
+
+
+
+o.connect(g);
+
+b.connect(bg);
+
+
+g.connect(audio.destination);
+
+bg.connect(audio.destination);
+
+
+
+o.type="square";
+
+b.type="sine";
+
+
+let now=audio.currentTime;
+
+
+
+o.frequency.setValueAtTime(300,now);
+
+o.frequency.linearRampToValueAtTime(1400,now+4);
+
+o.frequency.linearRampToValueAtTime(250,now+9);
+
+
+
+b.frequency.setValueAtTime(40,now);
+
+b.frequency.linearRampToValueAtTime(150,now+4);
+
+b.frequency.linearRampToValueAtTime(35,now+9);
+
+
+
+g.gain.value=.12;
+
+bg.gain.value=.18;
+
+
+
+o.start(now);
+
+b.start(now);
+
+
+o.stop(now+9);
+
+b.stop(now+9);
+
+
+}
+
+
+
+
+function startAlarm(){
+
+audio.resume().then(()=>{
+
+
+siren();
+
+
+setInterval(
+siren,
+9500
+);
+
+
+alarmBtn.innerHTML=
+"🚨 ALARM AKTIF";
+
+
+});
+
+
+}
+
+
+</script>
+
+</body>
+</html>
